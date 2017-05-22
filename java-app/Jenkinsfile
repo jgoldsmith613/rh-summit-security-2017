@@ -19,63 +19,25 @@ node( 'maven' ) {
         """
     }
 
-   stage('wait for Black Duck scan results'){
-       login()
-       sh """
-           IMAGE_NAME=\$(oc get istag java-app:latest --template='{{ .image.metadata.name }}')
-           COUNTER=0
-           DELAY=10
-           MAX_COUNTER=40
-           echo "waiting for openscap scan results for java:latest"
-           set +e
-           while [ \$COUNTER -lt \$MAX_COUNTER ]
-           do
-             echo "checking image"
-             oc get image \$IMAGE_NAME --template="{{.metadata.labels}}" | grep com.blackducksoftware.image.has-vulnerabilities >/dev/null 2>&1
-             if [ \$? -eq 0 ]; then
-                 echo "Scan Completed"
-                 break
-             fi
-             if [ \$COUNTER -lt \$MAX_COUNTER ]; then
-                 echo -n "."
-                 COUNTER=\$(( \$COUNTER + 1 ))
-             fi
-             if [ \$COUNTER -eq \$MAX_COUNTER ]; then
-                  echo "Max time checking for scan completed.  Please confirm cloudforms is up and try again"
-                  exit 1
-             fi
-             sleep \$DELAY
-            done
-            sleep 5
-           set -e
-       """
+}
 
-   }
+podTemplate(label: 'mypod', containers: [
+    containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, command: 'cat'),
+    containerTemplate(name: 'golang', image: 'golang:1.6.3', ttyEnabled: true, command: 'cat')
+  ]) {
 
-    stage('check if scan passed'){
-	sh """
-            IMAGE_NAME=\$(oc get istag java-app:latest --template='{{ .image.metadata.name }}')
-            set +e
-            oc get image \$IMAGE_NAME -o yaml | grep com.blackducksoftware.image.has-vulnerabilities | grep true >/dev/null 2>&1
-            if [ \$? -eq 0 ]; then
-                 echo 'true' > java_app_temp
-            else
-	         echo 'false' > java_app_temp
-            fi
-        """
-        deny = readFile 'java_app_temp'
-        if( deny.trim() == "true" ){
-		    input "Image has been marked as having a Black Duck policy violation. Do you wish to proceed anyway?"
-	}
+node( 'mypod'){
 
-    }
+container('golang'){
 
   stage('smoke test') {}
   stage('deploy to dev') {}
   stage('deploy to prod') {
      input 'Promte to Prod?'
   }
+}
 
+}
 }
 
 
