@@ -22,16 +22,15 @@ node( 'maven' ) {
 }
 
 podTemplate(label: 'mypod', cloud: "openshift", containers: [
-    containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, command: 'cat'),
-    containerTemplate(name: 'golang', image: 'golang:1.6.3', ttyEnabled: true, command: 'cat')
+    containerTemplate(name: 'java-app-slave', image: '172.30.135.69:5000/rh-summit-2017/java-app:latest', ttyEnabled: true, command: 'cat')
   ]) {
 
 node( 'mypod'){
 
-container(name: 'golang', cloud: "openshift"){
+container(name: 'java-app-slave', cloud: "openshift"){
 
   stage('smoke test') {
-     sh 'echo apple'
+     sh 'ls /deployments'
   }
   stage('deploy to dev') {}
   stage('deploy to prod') {
