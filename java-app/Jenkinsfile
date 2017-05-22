@@ -21,14 +21,14 @@ node( 'maven' ) {
 
 }
 
-podTemplate(label: 'mypod', containers: [
+podTemplate(label: 'mypod', cloud: "openshift", containers: [
     containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, command: 'cat'),
     containerTemplate(name: 'golang', image: 'golang:1.6.3', ttyEnabled: true, command: 'cat')
   ]) {
 
 node( 'mypod'){
 
-container('golang'){
+container(name: 'golang', cloud: "openshift"){
 
   stage('smoke test') {}
   stage('deploy to dev') {}
