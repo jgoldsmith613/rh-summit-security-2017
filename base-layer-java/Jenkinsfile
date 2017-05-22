@@ -51,13 +51,16 @@ node( 'maven' ) {
             oc get image \$IMAGE_NAME -o yaml | grep images.openshift.io/deny-execution | grep true >/dev/null 2>&1
             if [ \$? -eq 0 ]; then
                  echo 'true' > base_layer_temp
+                 echo \$IMAGE_NAME > image_name
             else
 	         echo 'false' > base_layer_temp
             fi
         """
         deny = readFile 'base_layer_temp'
         if( deny.trim() == "true" ){
-		    input "Image has been marked as having a OpenSCAP policy violation. Do you wish to proceed anyway?"
+                    image_name = readFile 'image_name'
+                    sub_image_name = image_name.substring(7, 15)
+		    input "Image has been marked as having a OpenSCAP policy violation. Digest of image starts with ${sub_image_name}. Do you wish to proceed anyway?"
 	}
 
     }
