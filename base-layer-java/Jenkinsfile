@@ -17,7 +17,7 @@ node( 'maven' ) {
            IMAGE_NAME=\$(oc get istag java:latest --template='{{ .image.metadata.name }}')
            COUNTER=0
            DELAY=10
-           MAX_COUNTER=30
+           MAX_COUNTER=45
            echo "waiting for openscap scan results for java:latest"
            set +e
            while [ \$COUNTER -lt \$MAX_COUNTER ]
