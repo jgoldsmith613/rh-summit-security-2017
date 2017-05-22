@@ -30,7 +30,9 @@ node( 'mypod'){
 
 container(name: 'golang', cloud: "openshift"){
 
-  stage('smoke test') {}
+  stage('smoke test') {
+     sh 'echo apple'
+  }
   stage('deploy to dev') {}
   stage('deploy to prod') {
      input 'Promte to Prod?'
