@@ -29,8 +29,12 @@ node( 'mypod'){
 
 container(name: 'java-app-slave', cloud: "openshift"){
 
+  stage('Build Application Scan'){
+      sh 'mv /deployments/* .'
+      nexusPolicyEvaluation failBuildOnNetworkError: false, iqApplication: 'security', iqStage: 'build', jobCredentialsId: ''
+  }
+
   stage('smoke test') {
-     sh 'ls /deployments'
   }
   stage('deploy to dev') {}
   stage('deploy to prod') {
