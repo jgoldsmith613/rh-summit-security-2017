@@ -33,7 +33,7 @@ container(name: 'java-app-slave', cloud: "openshift"){
       sh 'mv /deployments/* .'
       nexusPolicyEvaluation failBuildOnNetworkError: false, iqApplication: 'security', iqStage: 'build', jobCredentialsId: ''
       if (currentBuild.result == 'UNSTABLE'){
-          input 'Application has been marked as having a Sonatype policy violation.  Please check build logs, or <a href="http://iqserver-nexus.apps.c3.core.rht-labs.com">iq server</a>.  Do you wish to proceed anyway?'
+          input 'Application has been marked as having a Sonatype policy violation.  Please check build logs, or iq server (http://iqserver-nexus.apps.c3.core.rht-labs.com).  Do you wish to proceed anyway?'
       }
       currentBuild.result == null
   }
