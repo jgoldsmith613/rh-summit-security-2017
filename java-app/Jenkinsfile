@@ -15,6 +15,7 @@ node( 'maven' ) {
             mvn package dependency:copy-dependencies -Popenshift -DskipTests -e
             mv target/dependency/* s2i/deployments/.
             mv target/*.jar s2i/deployments/. 
+            oc project redhat-security
             oc start-build java-app --from-dir=s2i --follow=true
         """
     }

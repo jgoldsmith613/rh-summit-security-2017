@@ -7,6 +7,7 @@ node( 'maven' ) {
     stage('trigger build'){
         login()
         sh """
+            oc project redhat-security
             oc start-build base-layer-java --from-dir=base-layer-java --follow=true
         """
     }
