@@ -19,38 +19,20 @@ node( 'maven' ) {
         """
     }
 
-}
+   stage('wait for application container scan results'){
+        sh 'sleep 10'
+   }
 
-podTemplate(label: 'mypod', cloud: "openshift", containers: [
-    containerTemplate(name: 'java-app-slave', image: '172.30.135.69:5000/rh-summit-2017/java-app:latest', ttyEnabled: true, command: 'cat')
-  ]) {
+    stage('check if scan passed'){
+       sh 'sleep 5'
+    }
 
-node( 'mypod'){
-
-container(name: 'java-app-slave', cloud: "openshift"){
-
-  stage('Build Application Scan'){
-      sh 'mv /deployments/* .'
-      nexusPolicyEvaluation failBuildOnNetworkError: false, iqApplication: 'security', iqStage: 'build', jobCredentialsId: ''
-  }
-  
-
-  stage('smoke test') {
-  }
+  stage('smoke test') {}
   stage('deploy to dev') {}
-  stage('Release Application Scan'){
-      nexusPolicyEvaluation failBuildOnNetworkError: false, iqApplication: 'security', iqStage: 'release', jobCredentialsId: ''
-      if(currentBuild.result == 'FAILURE'){
-          error("Sonatype policy violations not allowed in PROD")
-      }
-      
-  }
   stage('deploy to prod') {
      input 'Promte to Prod?'
   }
-}
 
-}
 }
 
 
